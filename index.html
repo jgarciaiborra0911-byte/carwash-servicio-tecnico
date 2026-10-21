@@ -1,0 +1,269 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Car Wash - Servicio Técnico</title>
+<style>
+:root{font-family:Arial,sans-serif;color:#172033;background:#f2f5f9}
+*{box-sizing:border-box}
+body{margin:0}
+header{background:#12345a;color:white;padding:22px}
+header h1{margin:0;font-size:24px}
+header p{margin:7px 0 0;color:#d6e5f5}
+main{max-width:1200px;margin:auto;padding:16px}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+button{cursor:pointer;border:0;border-radius:8px;padding:12px 16px;font-weight:bold;background:#1769aa;color:white}
+nav button{background:white;color:#12345a;border:1px solid #d7dfeb}
+nav button.active{background:#1769aa;color:white}
+.panel,.kpi{background:white;border:1px solid #e0e6ef;border-radius:12px;padding:16px;margin-bottom:16px}
+h2{font-size:19px;margin:0 0 16px}
+form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+label{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:bold}
+input,select,textarea{width:100%;min-width:0;padding:11px;border:1px solid #cbd5e1;border-radius:7px;background:white;font:inherit}
+textarea{min-height:75px;resize:vertical}
+.wide{grid-column:1/-1}
+.check{flex-direction:row;align-items:center}
+.check input{width:20px;height:20px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.secondary{background:#e7eef7;color:#12345a}
+.danger{background:#a92828}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kpi small{color:#58677c}
+.kpi strong{display:block;font-size:25px;margin-top:8px;overflow-wrap:anywhere}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:10px;text-align:left;border-bottom:1px solid #e5eaf1;white-space:nowrap}
+th{background:#f5f7fb}
+.bar{height:12px;background:#e5edf6;border-radius:6px;overflow:hidden;min-width:100px}
+.bar span{display:block;height:100%;background:#2186c4}
+.hidden{display:none!important}
+.note{font-size:13px;color:#58677c;line-height:1.5}
+@media(max-width:750px){form{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:450px){form{grid-template-columns:1fr}.wide{grid-column:auto}}
+</style>
+</head>
+<body>
+<header>
+<h1>CAR WASH</h1>
+<p>Control y análisis del servicio técnico</p>
+</header>
+<main>
+<nav>
+<button class="active" data-tab="entrada">Nueva intervención</button>
+<button data-tab="registro">Registro</button>
+<button data-tab="analisis">Análisis</button>
+</nav>
+
+<section id="entrada" class="panel">
+<h2 id="formtitle">Registrar intervención</h2>
+<form id="form">
+<input type="hidden" id="editid">
+<label>Fecha
+<input id="fecha" type="date" required>
+</label>
+<label>Técnico
+<input id="tecnico" required placeholder="Nombre del técnico">
+</label>
+<label>Cliente
+<input id="cliente" required placeholder="Nombre del cliente">
+</label>
+<label>Horas de trabajo
+<input id="trabajo" type="number" min="0" step="0.25" value="0" required>
+</label>
+<label>Horas de desplazamiento
+<input id="viaje" type="number" min="0" step="0.25" value="0" required>
+</label>
+<label>Kilómetros
+<input id="km" type="number" min="0" step="1" value="0" required>
+</label>
+<label>Tipo de avería
+<select id="averia" required>
+<option value="">Seleccionar...</option>
+<option>Mecánica</option>
+<option>Eléctrica</option>
+<option>Electrónica</option>
+<option>Hidráulica</option>
+<option>Software / comunicación</option>
+<option>Mantenimiento</option>
+<option>Instalación</option>
+<option>Otra</option>
+</select>
+</label>
+<label>Resultado
+<select id="resultado">
+<option>Resuelta</option>
+<option>Pendiente</option>
+<option>Requiere segunda visita</option>
+</select>
+</label>
+<label class="check">
+<input id="primera" type="checkbox"> Resuelta en la primera visita
+</label>
+<label class="wide">Descripción de la solución
+<textarea id="solucion" placeholder="Qué se ha hecho para resolver la avería"></textarea>
+</label>
+<label class="wide">Materiales utilizados
+<textarea id="materiales" placeholder="Piezas, referencias y cantidades"></textarea>
+</label>
+<div class="wide actions">
+<button type="submit" id="savebtn">Guardar intervención</button>
+<button type="button" class="secondary" id="cancel" hidden>Cancelar edición</button>
+</div>
+</form>
+<p class="note">Introduce una fila por intervención. Los tiempos se expresan en horas decimales: por ejemplo, 1,5 equivale a una hora y media.</p>
+</section>
+
+<section id="registro" class="hidden">
+<div class="panel">
+<h2>Registro de intervenciones</h2>
+<div class="actions">
+<input id="buscar" placeholder="Buscar técnico o cliente..." style="flex:1;min-width:180px">
+<button id="exportar">Exportar CSV</button>
+</div>
+<p id="contador" class="note"></p>
+<div class="tablewrap">
+<table>
+<thead><tr><th>Fecha</th><th>Técnico</th><th>Cliente</th><th>Trabajo h</th><th>Viaje h</th><th>Km</th><th>Avería</th><th>Resultado</th><th>1.ª visita</th><th>Acciones</th></tr></thead>
+<tbody id="filas"></tbody>
+</table>
+</div>
+</div>
+</section>
+
+<section id="analisis" class="hidden">
+<div class="stats">
+<div class="kpi"><small>Intervenciones</small><strong id="total">0</strong></div>
+<div class="kpi"><small>Horas de trabajo</small><strong id="horas">0</strong></div>
+<div class="kpi"><small>Horas de desplazamiento</small><strong id="desplazamiento">0</strong></div>
+<div class="kpi"><small>Resueltas a la primera</small><strong id="tasa">0%</strong></div>
+</div>
+<div class="panel">
+<h2>Intervenciones por técnico</h2>
+<div id="tecnicos"></div>
+</div>
+<div class="panel">
+<h2>Clientes con más intervenciones</h2>
+<div id="clientes"></div>
+</div>
+<div class="panel">
+<h2>Tipos de avería</h2>
+<div id="averias"></div>
+</div>
+<div class="panel">
+<h2>Estado de las intervenciones</h2>
+<div id="estados"></div>
+</div>
+<div class="panel">
+<h2>Datos y copias de seguridad</h2>
+<p class="note">Descarga periódicamente el registro en CSV para conservar una copia de tus datos.</p>
+<button id="exportar2">Descargar registro CSV</button>
+<button class="secondary" id="backup">Crear copia JSON</button>
+<button class="secondary" id="importar">Restaurar copia JSON</button>
+<input id="archivo" type="file" accept=".json,application/json" class="hidden">
+<p class="note">Esta primera versión guarda los datos en el navegador de este dispositivo. Aún no está conectada a Supabase.</p>
+</div>
+</section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const KEY='carwash_intervenciones_v1';
+let datos=[];
+try{datos=JSON.parse(localStorage.getItem(KEY)||'[]');if(!Array.isArray(datos))datos=[]}catch(e){datos=[]}
+const hoy=new Date();
+$('fecha').value=[hoy.getFullYear(),String(hoy.getMonth()+1).padStart(2,'0'),String(hoy.getDate()).padStart(2,'0')].join('-');
+
+function guardar(){localStorage.setItem(KEY,JSON.stringify(datos))}
+function num(id){return Math.max(0,Number($(id).value)||0)}
+function escapeHTML(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function leerFormulario(){
+return {id:$('editid').value||String(Date.now()),fecha:$('fecha').value,tecnico:$('tecnico').value.trim(),cliente:$('cliente').value.trim(),trabajo:num('trabajo'),viaje:num('viaje'),km:num('km'),averia:$('averia').value,resultado:$('resultado').value,primera:$('primera').checked,solucion:$('solucion').value.trim(),materiales:$('materiales').value.trim()}
+}
+$('form').addEventListener('submit',e=>{
+e.preventDefault();
+const item=leerFormulario();
+if(!item.tecnico||!item.cliente||!item.fecha||!item.averia){alert('Completa la fecha, el técnico, el cliente y el tipo de avería.');return}
+if(item.primera)item.resultado='Resuelta';
+const i=datos.findIndex(x=>x.id===item.id);
+if(i>=0)datos[i]=item;else datos.push(item);
+guardar();limpiar();actualizar();alert('Intervención guardada correctamente.');
+});
+function limpiar(){
+$('form').reset();$('editid').value='';$('fecha').value=[hoy.getFullYear(),String(hoy.getMonth()+1).padStart(2,'0'),String(hoy.getDate()).padStart(2,'0')].join('-');
+$('trabajo').value=0;$('viaje').value=0;$('km').value=0;
+$('formtitle').textContent='Registrar intervención';$('savebtn').textContent='Guardar intervención';$('cancel').hidden=true;
+}
+$('cancel').onclick=limpiar;
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x===b));
+['entrada','registro','analisis'].forEach(id=>$(id).classList.toggle('hidden',id!==b.dataset.tab));
+actualizar();
+});
+function editar(id){
+const x=datos.find(d=>d.id===id);if(!x)return;
+['fecha','tecnico','cliente','trabajo','viaje','km','averia','resultado','primera','solucion','materiales'].forEach(k=>$(k).value=x[k]??'');
+$('primera').checked=!!x.primera;$('editid').value=x.id;
+$('formtitle').textContent='Editar intervención';$('savebtn').textContent='Guardar cambios';$('cancel').hidden=false;
+document.querySelector('[data-tab="entrada"]').click();window.scrollTo(0,0);
+}
+function borrar(id){
+if(!confirm('¿Eliminar esta intervención?'))return;
+datos=datos.filter(d=>d.id!==id);guardar();actualizar();
+}
+function tabla(){
+const q=$('buscar').value.toLowerCase();
+const lista=datos.filter(x=>(x.tecnico+' '+x.cliente+' '+x.averia).toLowerCase().includes(q)).slice().sort((a,b)=>b.fecha.localeCompare(a.fecha));
+$('contador').textContent=lista.length+' intervenciones mostradas';
+$('filas').innerHTML=lista.map(x=>`<tr><td>${escapeHTML(x.fecha)}</td><td>${escapeHTML(x.tecnico)}</td><td>${escapeHTML(x.cliente)}</td><td>${x.trabajo}</td><td>${x.viaje}</td><td>${x.km}</td><td>${escapeHTML(x.averia)}</td><td>${escapeHTML(x.resultado)}</td><td>${x.primera?'Sí':'No'}</td><td><button onclick="editar('${escapeHTML(x.id)}')">Editar</button> <button class="danger" onclick="borrar('${escapeHTML(x.id)}')">Borrar</button></td></tr>`).join('');
+}
+$('buscar').addEventListener('input',tabla);
+function barras(id,items){
+const arr=Object.entries(items).sort((a,b)=>b[1]-a[1]);
+const max=Math.max(1,...arr.map(x=>x[1]));
+$(id).innerHTML=arr.length?arr.map(([name,val])=>`<div style="margin:12px 0"><div style="display:flex;justify-content:space-between;gap:12px;margin-bottom:5px"><span>${escapeHTML(name)}</span><strong>${val}</strong></div><div class="bar"><span style="width:${val/max*100}%"></span></div></div>`).join(''):'<p class="note">Todavía no hay datos.</p>';
+}
+function agrupar(campo){
+return datos.reduce((o,x)=>{let k=x[campo]||'Sin especificar';o[k]=(o[k]||0)+1;return o},{});
+}
+function analisis(){
+const sum=campo=>datos.reduce((s,x)=>s+(Number(x[campo])||0),0);
+$('total').textContent=datos.length;
+$('horas').textContent=sum('trabajo').toFixed(2);
+$('desplazamiento').textContent=sum('viaje').toFixed(2);
+const resueltas=datos.filter(x=>x.resultado==='Resuelta').length;
+const primera=datos.filter(x=>x.primera&&x.resultado==='Resuelta').length;
+$('tasa').textContent=(resueltas?Math.round(primera/resueltas*100):0)+'%';
+barras('tecnicos',agrupar('tecnico'));
+barras('clientes',agrupar('cliente'));
+barras('averias',agrupar('averia'));
+barras('estados',agrupar('resultado'));
+}
+function actualizar(){tabla();analisis()}
+function descargar(nombre,contenido,tipo){
+const blob=new Blob([contenido],{type:tipo});
+const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=nombre;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function csv(){
+const cols=['fecha','tecnico','cliente','trabajo','viaje','km','averia','resultado','primera','solucion','materiales'];
+const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+return '\uFEFF'+[cols.join(';'),...datos.map(x=>cols.map(k=>q(x[k])).join(';'))].join('\r\n');
+}
+function exportar(){descargar('carwash_intervenciones.csv',csv(),'text/csv;charset=utf-8')}
+$('exportar').onclick=exportar;$('exportar2').onclick=exportar;
+$('backup').onclick=()=>descargar('carwash_copia.json',JSON.stringify(datos,null,2),'application/json');
+$('importar').onclick=()=>$('archivo').click();
+$('archivo').onchange=async e=>{
+const f=e.target.files[0];if(!f)return;
+try{
+const arr=JSON.parse(await f.text());
+if(!Array.isArray(arr)||!confirm('¿Reemplazar los datos actuales por la copia seleccionada?'))return;
+datos=arr;guardar();actualizar();alert('Copia restaurada.');
+}catch(err){alert('No se ha podido leer la copia JSON.')}
+e.target.value='';
+};
+actualizar();
+</script>
+</body>
+</html>
