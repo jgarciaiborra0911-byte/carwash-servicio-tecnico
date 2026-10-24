@@ -228,16 +228,33 @@ function dictarIntervencion() {
     const texto = event.results[0][0].transcript;
     estado.textContent = "Texto reconocido: " + texto;
 
-    const buscar = (etiqueta, siguiente) => {
-      const inicio = texto.toLowerCase().indexOf(etiqueta);
-      if (inicio === -1) return "";
-      const desde = inicio + etiqueta.length;
-      const fin = siguiente
-        ? texto.toLowerCase().indexOf(siguiente, desde)
-        : -1;
-      return texto.substring(desde, fin === -1 ? texto.length : fin)
-        .trim().replace(/[.,;]+$/, "");
-    };
+    
+const normalizar = (valor) =>
+  valor.toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+const buscar = (etiqueta, siguiente) => {
+  const textoNormalizado = normalizar(texto);
+  const etiquetaNormalizada = normalizar(etiqueta);
+  const inicio = textoNormalizado.indexOf(etiquetaNormalizada);
+
+  if (inicio === -1) return "";
+
+  const desde = inicio + etiquetaNormalizada.length;
+  const siguienteNormalizado = siguiente
+    ? normalizar(siguiente)
+    : "";
+
+  const fin = siguienteNormalizado
+    ? textoNormalizado.indexOf(siguienteNormalizado, desde)
+    : -1;
+
+  return texto.substring(
+    desde,
+    fin === -1 ? texto.length : fin
+  ).trim().replace(/[.,;]+$/, "");
+};
 
     const poner = (id, valor) => {
       if (valor) document.getElementById(id).value = valor;
@@ -247,6 +264,18 @@ function dictarIntervencion() {
     poner("tecnico", buscar("técnico", "trabajo"));    
 const convertirNumero = (valor) => {
   const t = valor.toLowerCase().trim().replace(",", ".");
+
+  // Expresiones de horas y medias horas
+  if (/hora[s]?\s+y\s+media/.test(t) ||
+      /y\s+media/.test(t)) {
+    const base = convertirNumeroBase(t);
+    return base === "" ? "0.5" : String(Number(base) + 0.5);
+  }
+
+  return convertirNumeroBase(t);
+};
+
+const convertirNumeroBase = (t) => {
   const decimal = t.match(/\d+(?:\.\d+)?/);
   if (decimal) return decimal[0];
 
@@ -254,17 +283,15 @@ const convertirNumero = (valor) => {
     cero: 0, una: 1, uno: 1, un: 1,
     dos: 2, tres: 3, cuatro: 4, cinco: 5,
     seis: 6, siete: 7, ocho: 8, nueve: 9,
-    diez: 10, media: 0.5, medio: 0.5,
-    "media hora": 0.5, "media jornada": 4
+    diez: 10, media: 0.5, medio: 0.5
   };
 
-  for (const palabra of Object.keys(numeros).sort((a,b) => b.length-a.length)) {
+  for (const palabra of Object.keys(numeros).sort((a, b) => b.length - a.length)) {
     if (t.includes(palabra)) return String(numeros[palabra]);
   }
+
   return "";
 };
-
-
 const textoCompleto = texto.toLowerCase();
 
 const extraerHoras = (inicio, finales) => {
