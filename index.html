@@ -244,9 +244,35 @@ function dictarIntervencion() {
     };
 
     poner("cliente", buscar("cliente", "técnico"));
-    poner("tecnico", buscar("técnico", "trabajo"));
-    poner("trabajo", buscar("trabajo", "desplazamiento"));
-    poner("desplazamiento", buscar("desplazamiento", "avería"));
+    poner("tecnico", buscar("técnico", "trabajo"));    
+const convertirNumero = (valor) => {
+  const t = valor.toLowerCase().trim().replace(",", ".");
+  const decimal = t.match(/\d+(?:\.\d+)?/);
+  if (decimal) return decimal[0];
+
+  const numeros = {
+    cero: 0, una: 1, uno: 1, un: 1,
+    dos: 2, tres: 3, cuatro: 4, cinco: 5,
+    seis: 6, siete: 7, ocho: 8, nueve: 9,
+    diez: 10, media: 0.5, medio: 0.5,
+    "media hora": 0.5, "media jornada": 4
+  };
+
+  for (const palabra of Object.keys(numeros).sort((a,b) => b.length-a.length)) {
+    if (t.includes(palabra)) return String(numeros[palabra]);
+  }
+  return "";
+};
+
+const trabajoTexto = buscar("trabajo", "desplazamiento");
+const desplazamientoTexto = buscar("desplazamiento", "avería");
+
+const trabajoValor = convertirNumero(trabajoTexto);
+const desplazamientoValor = convertirNumero(desplazamientoTexto);
+
+if (trabajoValor !== "") document.getElementById("trabajo").value = trabajoValor;
+if (desplazamientoValor !== "") document.getElementById("desplazamiento").value = desplazamientoValor;
+
     poner("averia", buscar("avería", "solución"));
     poner("solucion", buscar("solución", "materiales"));
     poner("materiales", buscar("materiales", "primera visita"));
