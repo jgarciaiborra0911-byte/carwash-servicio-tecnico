@@ -278,6 +278,25 @@ const convertirNumero = (valor) => {
 const convertirNumeroBase = (t) => {
   const decimal = t.match(/\d+(?:\.\d+)?/);
   if (decimal) return decimal[0];
+    const tNormalizado = t.normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+  const mediaHora = /y\s+media|y\s+medio/.test(tNormalizado);
+
+  if (mediaHora) {
+    const numero = tNormalizado.match(/\b(cero|una|uno|un|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|\d+(?:\.\d+)?)\b/);
+
+    if (numero) {
+      const valores = {
+        cero: 0, una: 1, uno: 1, un: 1,
+        dos: 2, tres: 3, cuatro: 4, cinco: 5,
+        seis: 6, siete: 7, ocho: 8, nueve: 9, diez: 10
+      };
+
+      const base = valores[numero[0]] ?? Number(numero[0]);
+      return String(base + 0.5);
+    }
+  }
 
   const numeros = {
     cero: 0, una: 1, uno: 1, un: 1,
