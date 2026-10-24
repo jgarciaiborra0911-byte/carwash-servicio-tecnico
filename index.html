@@ -120,5 +120,95 @@ async function cargar() {
 }
 document.getElementById("recargar").addEventListener("click", cargar);
 </script>
+
+<section id="estadisticas" style="padding:20px;max-width:1000px;margin:auto;font-family:Arial,sans-serif">
+  <h2>Estadísticas del servicio técnico</h2>
+  <p>Resumen de intervenciones registradas</p>
+
+  <button onclick="cargarEstadisticas()" style="padding:12px 18px;font-size:16px">
+    Actualizar estadísticas
+  </button>
+
+  <p id="estadoEstadisticas">Pulsa actualizar para consultar los datos.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+    <div style="padding:18px;border:1px solid #ccc;border-radius:10px">
+      <h3>Intervenciones</h3>
+      <strong id="totalIntervenciones">—</strong>
+    </div>
+    <div style="padding:18px;border:1px solid #ccc;border-radius:10px">
+      <h3>Horas de trabajo</h3>
+      <strong id="totalTrabajo">—</strong>
+    </div>
+    <div style="padding:18px;border:1px solid #ccc;border-radius:10px">
+      <h3>Horas de desplazamiento</h3>
+      <strong id="totalDesplazamiento">—</strong>
+    </div>
+  </div>
+
+  <h3>Intervenciones por técnico</h3>
+  <div id="estadisticasTecnicos"></div>
+</section>
+
+<script>
+async function cargarEstadisticas() {
+  const estado = document.getElementById("estadoEstadisticas");
+  estado.textContent = "Consultando datos...";
+
+  try {
+    if (typeof supabase === "undefined") {
+      throw new Error("No se encuentra la conexión con Supabase.");
+    }
+
+    const { data, error } = await supabase
+      .from("intervenciones")
+      .select("*");
+
+    if (error) throw error;
+
+    const filas = data || [];
+    document.getElementById("totalIntervenciones").textContent = filas.length;
+
+    const buscar = (fila, nombres) => {
+      const clave = Object.keys(fila).find(k =>
+        nombres.includes(k.toLowerCase())
+      );
+      return clave ? fila[clave] : null;
+    };
+
+    const numero = valor => {
+      if (valor == null || valor === "") return 0;
+      const n = Number(String(valor).replace(",", "."));
+      return Number.isFinite(n) ? n : 0;
+    };
+
+    const trabajo = filas.reduce((s, f) =>
+      s + numero(buscar(f, ["tiempo_trabajo", "horas_trabajo", "work_time"])), 0);
+
+    const desplazamiento = filas.reduce((s, f) =>
+      s + numero(buscar(f, ["tiempo_desplazamiento", "tiempo_conduccion", "driving_time"])), 0);
+
+    document.getElementById("totalTrabajo").textContent = trabajo.toFixed(2);
+    document.getElementById("totalDesplazamiento").textContent = desplazamiento.toFixed(2);
+
+    const tecnicos = {};
+    filas.forEach(f => {
+      const nombre = buscar(f, ["tecnico", "nombre_tecnico", "technician"]) || "Sin indicar";
+      tecnicos[nombre] = (tecnicos[nombre] || 0) + 1;
+    });
+
+    document.getElementById("estadisticasTecnicos").innerHTML =
+      Object.entries(tecnicos)
+        .sort((a, b) => b[1] - a[1])
+        .map(([nombre, total]) =>
+          `<p>${String(nombre).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}: <strong>${total}</strong></p>`
+        ).join("") || "Todavía no hay intervenciones.";
+
+    estado.textContent = "Estadísticas actualizadas correctamente.";
+  } catch (e) {
+    estado.textContent = "Error al consultar las estadísticas: " + e.message;
+  }
+}
+</script>
 </body>
 </html>
