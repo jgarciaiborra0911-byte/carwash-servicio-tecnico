@@ -264,14 +264,43 @@ const convertirNumero = (valor) => {
   return "";
 };
 
-const trabajoTexto = buscar("trabajo", "desplazamiento");
-const desplazamientoTexto = buscar("desplazamiento", "avería");
 
-const trabajoValor = convertirNumero(trabajoTexto);
-const desplazamientoValor = convertirNumero(desplazamientoTexto);
+const textoCompleto = texto.toLowerCase();
 
-if (trabajoValor !== "") document.getElementById("trabajo").value = trabajoValor;
-if (desplazamientoValor !== "") document.getElementById("desplazamiento").value = desplazamientoValor;
+const extraerHoras = (inicio, finales) => {
+  const posicion = textoCompleto.indexOf(inicio);
+  if (posicion === -1) return "";
+
+  const desde = posicion + inicio.length;
+  let hasta = texto.length;
+
+  for (const final of finales) {
+    const p = textoCompleto.indexOf(final, desde);
+    if (p !== -1 && p < hasta) hasta = p;
+  }
+
+  const frase = texto.substring(desde, hasta).trim();
+  return convertirNumero(frase);
+};
+
+const trabajoValor = extraerHoras(
+  "trabajo",
+  ["desplazamiento", "avería", "averia"]
+);
+
+const desplazamientoValor = extraerHoras(
+  "desplazamiento",
+  ["avería", "averia", "solución", "solucion"]
+);
+
+if (trabajoValor !== "") {
+  document.getElementById("trabajo").value = trabajoValor;
+}
+
+if (desplazamientoValor !== "") {
+  document.getElementById("desplazamiento").value = desplazamientoValor;
+}
+
 
     poner("averia", buscar("avería", "solución"));
     poner("solucion", buscar("solución", "materiales"));
