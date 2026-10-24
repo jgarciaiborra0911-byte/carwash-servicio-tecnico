@@ -262,17 +262,46 @@ const buscar = (etiqueta, siguiente) => {
 
     poner("cliente", buscar("cliente", "técnico"));
     poner("tecnico", buscar("técnico", "trabajo"));    
-const convertirNumero = (valor) => {
-  const t = valor.toLowerCase().trim().replace(",", ".");
 
-  // Expresiones de horas y medias horas
-  if (/hora[s]?\s+y\s+media/.test(t) ||
-      /y\s+media/.test(t)) {
-    const base = convertirNumeroBase(t);
-    return base === "" ? "0.5" : String(Number(base) + 0.5);
+const convertirNumero = (valor) => {
+  const t = valor.toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .replace(",", ".");
+
+  const numero = t.match(/\d+(?:\.\d+)?/);
+
+  const palabras = {
+    cero: 0, una: 1, uno: 1, un: 1,
+    dos: 2, tres: 3, cuatro: 4, cinco: 5,
+    seis: 6, siete: 7, ocho: 8, nueve: 9,
+    diez: 10
+  };
+
+  let base = numero
+    ? Number(numero[0])
+    : null;
+
+  if (base === null) {
+    for (const palabra of Object.keys(palabras).sort((a, b) => b.length - a.length)) {
+      if (new RegExp("\\b" + palabra + "\\b").test(t)) {
+        base = palabras[palabra];
+        break;
+      }
+    }
   }
 
-  return convertirNumeroBase(t);
+  if (base === null) {
+    if (/\bmedia hora\b|\bmedio hora\b/.test(t)) return "0.5";
+    return "";
+  }
+
+  if (/\by media\b|\by medio\b/.test(t)) {
+    base += 0.5;
+  }
+
+  return String(base);
 };
 
 const convertirNumeroBase = (t) => {
