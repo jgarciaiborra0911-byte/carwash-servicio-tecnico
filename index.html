@@ -220,15 +220,16 @@ function dictarIntervencion() {
   const reconocimiento = new Reconocimiento();
   reconocimiento.lang = "es-ES";
   reconocimiento.continuous = true;
-  reconocimiento.interimResults = true;
+  reconocimiento.interimResults = false;
   reconocimiento.maxAlternatives = 1;
 
   estado.textContent = "Escuchando. Dicta toda la intervención.";
 
   reconocimiento.onresult = function(event) {
-    const texto = event.results[0][0].transcript;
+    const texto = Array.from(event.results)
+     .map(resultado => resultado[0].transcript)
+     .join(" ");
     estado.textContent = "Texto reconocido: " + texto;
-
     
 const normalizar = (valor) =>
   valor.toLowerCase()
