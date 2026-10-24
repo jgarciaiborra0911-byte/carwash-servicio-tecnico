@@ -219,8 +219,9 @@ function dictarIntervencion() {
 
   const reconocimiento = new Reconocimiento();
   reconocimiento.lang = "es-ES";
-  reconocimiento.continuous = false;
-  reconocimiento.interimResults = false;
+  reconocimiento.continuous = true;
+  reconocimiento.interimResults = true;
+  reconocimiento.maxAlternatives = 1;
 
   estado.textContent = "Escuchando. Dicta toda la intervención.";
 
