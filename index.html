@@ -152,15 +152,12 @@ document.getElementById("recargar").addEventListener("click", cargar);
 
 <script>
 </body>  
+
 async function cargarEstadisticas() {
   const estado = document.getElementById("estadoEstadisticas");
   estado.textContent = "Consultando datos...";
 
   try {
-    if (typeof db === "undefined") {
-      throw new Error("No se encuentra la conexión con Supabase.");
-    }
-
     const { data, error } = await db
       .from("intervenciones")
       .select("*");
@@ -168,46 +165,45 @@ async function cargarEstadisticas() {
     if (error) throw error;
 
     const filas = data || [];
-    document.getElementById("totalIntervenciones").textContent = filas.length;
 
-    const buscar = (fila, nombres) => {
-      const clave = Object.keys(fila).find(k =>
-        nombres.includes(k.toLowerCase())
-      );
-      return clave ? fila[clave] : null;
-    };
+    document.getElementById("totalIntervenciones").textContent =
+      filas.length;
 
-    const numero = valor => {
-      if (valor == null || valor === "") return 0;
-      const n = Number(String(valor).replace(",", "."));
-      return Number.isFinite(n) ? n : 0;
-    };
+    const trabajo = filas.reduce(
+      (s, r) => s + (Number(r.tiempo_trabajo) || 0), 0
+    );
 
-    const trabajo = filas.reduce((s, f) =>
-      s + numero(buscar(f, ["tiempo_trabajo", "horas_trabajo", "work_time"])), 0);
+    const desplazamiento = filas.reduce(
+      (s, r) => s + (Number(r.tiempo_desplazamiento) || 0), 0
+    );
 
-    const desplazamiento = filas.reduce((s, f) =>
-      s + numero(buscar(f, ["tiempo_desplazamiento", "tiempo_conduccion", "driving_time"])), 0);
+    document.getElementById("totalTrabajo").textContent =
+      trabajo.toFixed(2);
 
-    document.getElementById("totalTrabajo").textContent = trabajo.toFixed(2);
-    document.getElementById("totalDesplazamiento").textContent = desplazamiento.toFixed(2);
+    document.getElementById("totalDesplazamiento").textContent =
+      desplazamiento.toFixed(2);
 
     const tecnicos = {};
-    filas.forEach(f => {
-      const nombre = buscar(f, ["tecnico", "nombre_tecnico", "technician"]) || "Sin indicar";
+
+    filas.forEach(r => {
+      const nombre = r.tecnico || "Sin indicar";
       tecnicos[nombre] = (tecnicos[nombre] || 0) + 1;
     });
 
-    document.getElementById("estadisticasTecnicos").innerHTML =
-      Object.entries(tecnicos)
-        .sort((a, b) => b[1] - a[1])
-        .map(([nombre, total]) =>
-          `<p>${String(nombre).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}: <strong>${total}</strong></p>`
-        ).join("") || "Todavía no hay intervenciones.";
+    const lista = document.getElementById("estadisticasTecnicos");
+    lista.replaceChildren();
+
+    Object.entries(tecnicos)
+      .sort((a, b) => b[1] - a[1])
+      .forEach(([nombre, total]) => {
+        const p = document.createElement("p");
+        p.textContent = nombre + ": " + total + " intervenciones";
+        lista.appendChild(p);
+      });
 
     estado.textContent = "Estadísticas actualizadas correctamente.";
   } catch (e) {
-    estado.textContent = "Error al consultar las estadísticas: " + e.message;
+    estado.textContent = "Error al consultar: " + e.message;
   }
 }
 </script>
