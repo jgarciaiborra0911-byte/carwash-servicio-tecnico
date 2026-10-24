@@ -24,6 +24,10 @@ button{width:100%;padding:15px;background:#087443;color:white;border:0;border-ra
 <div class="panel">
 <h2>Nueva intervención</h2>
 <form id="formulario">
+<button type="button" id="botonDictado" onclick="dictarIntervencion()">
+  🎙️ Dictar intervención completa
+</button>
+<p id="estadoDictado"></p>
 <label>Fecha</label>
 <input id="fecha" type="date" required>
 <label>Cliente</label>
@@ -203,6 +207,66 @@ async function cargarEstadisticas() {
     estado.textContent = "Error al consultar: " + e.message;
   }
 }
+
+function dictarIntervencion() {
+  const estado = document.getElementById("estadoDictado");
+  const Reconocimiento = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!Reconocimiento) {
+    estado.textContent = "El navegador no permite dictado por voz. Prueba con Google Chrome.";
+    return;
+  }
+
+  const reconocimiento = new Reconocimiento();
+  reconocimiento.lang = "es-ES";
+  reconocimiento.continuous = false;
+  reconocimiento.interimResults = false;
+
+  estado.textContent = "Escuchando. Dicta toda la intervención.";
+
+  reconocimiento.onresult = function(event) {
+    const texto = event.results[0][0].transcript;
+    estado.textContent = "Texto reconocido: " + texto;
+
+    const buscar = (etiqueta, siguiente) => {
+      const inicio = texto.toLowerCase().indexOf(etiqueta);
+      if (inicio === -1) return "";
+      const desde = inicio + etiqueta.length;
+      const fin = siguiente
+        ? texto.toLowerCase().indexOf(siguiente, desde)
+        : -1;
+      return texto.substring(desde, fin === -1 ? texto.length : fin)
+        .trim().replace(/[.,;]+$/, "");
+    };
+
+    const poner = (id, valor) => {
+      if (valor) document.getElementById(id).value = valor;
+    };
+
+    poner("cliente", buscar("cliente", "técnico"));
+    poner("tecnico", buscar("técnico", "trabajo"));
+    poner("trabajo", buscar("trabajo", "desplazamiento"));
+    poner("desplazamiento", buscar("desplazamiento", "avería"));
+    poner("averia", buscar("avería", "solución"));
+    poner("solucion", buscar("solución", "materiales"));
+    poner("materiales", buscar("materiales", "primera visita"));
+
+    const primera = buscar("primera visita", "");
+    if (primera) {
+      document.getElementById("primera").value =
+        /^no\b/i.test(primera) ? "false" : "true";
+    }
+
+    estado.textContent =
+      "Dictado terminado. Revisa los campos antes de guardar.";
+  };
+
+  reconocimiento.onerror = function() {
+    estado.textContent = "No se pudo reconocer la voz. Comprueba el permiso del micrófono.";
+  };
+
+  reconocimiento.start();
+}  
 </script>
 </body>  
 </html>
