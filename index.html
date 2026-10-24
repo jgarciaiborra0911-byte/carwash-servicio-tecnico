@@ -263,6 +263,7 @@ const buscar = (etiqueta, siguiente) => {
     poner("cliente", buscar("cliente", "técnico"));
     poner("tecnico", buscar("técnico", "trabajo"));    
 
+
 const convertirNumero = (valor) => {
   const t = valor.toLowerCase()
     .normalize("NFD")
@@ -270,7 +271,7 @@ const convertirNumero = (valor) => {
     .trim()
     .replace(",", ".");
 
-  const numero = t.match(/\d+(?:\.\d+)?/);
+  const tieneMedia = /\by\s+media\b|\by\s+medio\b|\bmedia hora\b|\bmedio hora\b/.test(t);
 
   const palabras = {
     cero: 0, una: 1, uno: 1, un: 1,
@@ -279,9 +280,8 @@ const convertirNumero = (valor) => {
     diez: 10
   };
 
-  let base = numero
-    ? Number(numero[0])
-    : null;
+  const numero = t.match(/\d+(?:\.\d+)?/);
+  let base = numero ? Number(numero[0]) : null;
 
   if (base === null) {
     for (const palabra of Object.keys(palabras).sort((a, b) => b.length - a.length)) {
@@ -293,16 +293,12 @@ const convertirNumero = (valor) => {
   }
 
   if (base === null) {
-    if (/\bmedia hora\b|\bmedio hora\b/.test(t)) return "0.5";
-    return "";
+    return tieneMedia ? "0.5" : "";
   }
 
-  if (/\by media\b|\by medio\b/.test(t)) {
-    base += 0.5;
-  }
-
-  return String(base);
+  return String(base + (tieneMedia ? 0.5 : 0));
 };
+
 
 const convertirNumeroBase = (t) => {
   const decimal = t.match(/\d+(?:\.\d+)?/);
