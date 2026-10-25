@@ -32,6 +32,17 @@ button{width:100%;padding:15px;background:#087443;color:white;border:0;border-ra
 <input id="fecha" type="date" required>
 <label>Cliente</label>
 <input id="cliente" required>
+  <label for="codigo_postal">Código postal alemán</label>
+<input
+  type="text"
+  id="codigo_postal"
+  name="codigo_postal"
+  placeholder="Ej. 68159"
+  inputmode="numeric"
+  pattern="[0-9]{5}"
+  maxlength="5"
+  required
+> 
 <label>Técnico</label>
 <input id="tecnico" required>
 <label>Tiempo de trabajo (horas)</label>
