@@ -84,16 +84,17 @@ document.getElementById("formulario").addEventListener("submit", async e => {
   e.preventDefault();
   estado.textContent = "Guardando...";
   const fila = {
-    fecha_intervencion: document.getElementById("fecha").value,
-    cliente: document.getElementById("cliente").value.trim(),
-    tecnico: document.getElementById("tecnico").value.trim(),
-    tiempo_trabajo: Number(document.getElementById("trabajo").value),
-    tiempo_desplazamiento: Number(document.getElementById("desplazamiento").value),
-    tipo_averia: document.getElementById("averia").value.trim(),
-    solucion: document.getElementById("solucion").value.trim(),
-    materiales: document.getElementById("materiales").value.trim(),
-    primera_visita: document.getElementById("primera").value === "true"
-  };
+  fecha_intervencion: document.getElementById("fecha").value,
+  cliente: document.getElementById("cliente").value.trim(),
+  codigo_postal: document.getElementById("codigo_postal").value.trim(),
+  tecnico: document.getElementById("tecnico").value.trim(),
+  tiempo_trabajo: Number(document.getElementById("trabajo").value),
+  tiempo_desplazamiento: Number(document.getElementById("desplazamiento").value),
+  tipo_averia: document.getElementById("averia").value.trim(),
+  solucion: document.getElementById("solucion").value.trim(),
+  materiales: document.getElementById("materiales").value.trim(),
+  primera_visita: document.getElementById("primera").value === "true"
+};
   const { error } = await db.from("intervenciones").insert([fila]);
   if (error) {
     estado.textContent = "Error al guardar: " + error.message;
