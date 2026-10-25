@@ -276,15 +276,52 @@ const buscar = (etiqueta, siguiente) => {
 
     poner("cliente", buscar("cliente", "técnico"));
     poner("tecnico", buscar("técnico", "trabajo"));
-    const codigoPostal = buscar(
-  "código postal",
-  "técnico"
-);
+    const textoNormalizado = normalizar(texto);
 
-if (codigoPostal) {
-  const encontrado = codigoPostal.match(/\b\d{5}\b/);
-  if (encontrado) {
-    document.getElementById("codigo_postal").value = encontrado[0];
+// Primero intenta encontrar el código como cinco cifras.
+let encontrado = textoNormalizado.match(/\b\d{5}\b/);
+
+if (encontrado) {
+  document.getElementById("codigo_postal").value = encontrado[0];
+} else {
+  // Si el dictado reconoce los dígitos como palabras.
+  const palabras = {
+    cero: "0",
+    uno: "1",
+    una: "1",
+    un: "1",
+    dos: "2",
+    tres: "3",
+    cuatro: "4",
+    cinco: "5",
+    seis: "6",
+    siete: "7",
+    ocho: "8",
+    nueve: "9"
+  };
+
+  const posicion = textoNormalizado.indexOf("codigo postal");
+
+  if (posicion !== -1) {
+    const despues = textoNormalizado.substring(posicion + 13);
+    const tokens = despues.match(/\d+|[a-z]+/g) || [];
+    let digitos = "";
+
+    for (const palabra of tokens) {
+      if (palabras[palabra] !== undefined) {
+        digitos += palabras[palabra];
+      } else if (/^\d+$/.test(palabra)) {
+        digitos += palabra;
+      } else if (digitos.length < 5) {
+        continue;
+      }
+
+      if (digitos.length >= 5) break;
+    }
+
+    if (/^\d{5}$/.test(digitos)) {
+      document.getElementById("codigo_postal").value = digitos;
+    }
   }
 }
 
