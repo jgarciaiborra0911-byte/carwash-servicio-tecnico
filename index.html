@@ -231,6 +231,8 @@ document.getElementById("recargar").addEventListener("click", cargar);
 
   <h3>Intervenciones por técnico</h3>
   <div id="estadisticasTecnicos"></div>
+  <h3>Clientes más visitados</h3>
+  <div id="estadisticasClientes"></div>
 </section>
 <script> 
 async function cargarEstadisticas() {
@@ -312,7 +314,23 @@ cargarEstadisticas();
         p.textContent = nombre + ": " + total + " intervenciones";
         lista.appendChild(p);
       });
+    const clientes = {};
 
+filas.forEach(r => {
+  const nombre = r.cliente || "Sin indicar";
+  clientes[nombre] = (clientes[nombre] || 0) + 1;
+});
+
+const listaClientes = document.getElementById("estadisticasClientes");
+listaClientes.replaceChildren();
+
+Object.entries(clientes)
+  .sort((a, b) => b[1] - a[1])
+  .forEach(([nombre, total]) => {
+    const p = document.createElement("p");
+    p.textContent = nombre + ": " + total + " intervenciones";
+    listaClientes.appendChild(p);
+  });
     estado.textContent = "Estadísticas actualizadas correctamente.";
   } catch (e) {
     estado.textContent = "Error al consultar: " + e.message;
