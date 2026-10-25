@@ -275,7 +275,18 @@ const buscar = (etiqueta, siguiente) => {
     };
 
     poner("cliente", buscar("cliente", "técnico"));
-    poner("tecnico", buscar("técnico", "trabajo"));    
+    poner("tecnico", buscar("técnico", "trabajo"));
+    const codigoPostal = buscar(
+  "código postal",
+  "técnico"
+);
+
+if (codigoPostal) {
+  const encontrado = codigoPostal.match(/\b\d{5}\b/);
+  if (encontrado) {
+    document.getElementById("codigo_postal").value = encontrado[0];
+  }
+}
 
 
 const convertirNumero = (valor) => {
