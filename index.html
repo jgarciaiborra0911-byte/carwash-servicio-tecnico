@@ -147,19 +147,39 @@ document.getElementById("recargar").addEventListener("click", cargar);
 
   <p id="estadoEstadisticas">Pulsa actualizar para consultar los datos.</p>
 
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+
     <div style="padding:18px;border:1px solid #ccc;border-radius:10px">
       <h3>Intervenciones</h3>
       <strong id="totalIntervenciones">—</strong>
     </div>
+
     <div style="padding:18px;border:1px solid #ccc;border-radius:10px">
       <h3>Horas de trabajo</h3>
       <strong id="totalTrabajo">—</strong>
     </div>
+
     <div style="padding:18px;border:1px solid #ccc;border-radius:10px">
       <h3>Horas de desplazamiento</h3>
       <strong id="totalDesplazamiento">—</strong>
     </div>
+
+    <div style="padding:18px;border:1px solid #ccc;border-radius:10px;background:#e8f5e9">
+      <h3>Resolución en primera visita</h3>
+      <strong id="porcentajePrimera">—</strong>
+    </div>
+
+    <div style="padding:18px;border:1px solid #ccc;border-radius:10px;background:#e3f2fd">
+      <h3>Desplazamiento medio</h3>
+      <strong id="desplazamientoMedio">—</strong>
+      <span> horas por intervención</span>
+    </div>
+
+    <div style="padding:18px;border:1px solid #ccc;border-radius:10px;background:#fff3e0">
+      <h3>Tiempo dedicado a viajar</h3>
+      <strong id="porcentajeDesplazamiento">—</strong>
+    </div>
+
   </div>
 
   <h3>Intervenciones por técnico</h3>
@@ -195,6 +215,35 @@ async function cargarEstadisticas() {
 
     document.getElementById("totalDesplazamiento").textContent =
       desplazamiento.toFixed(2);
+        // Porcentaje de intervenciones resueltas en primera visita
+    const resueltasPrimera = filas.filter(
+      r => r.primera_visita === true || r.primera_visita === "true"
+    ).length;
+
+    const porcentajePrimera = filas.length
+      ? (resueltasPrimera / filas.length) * 100
+      : 0;
+
+    document.getElementById("porcentajePrimera").textContent =
+      porcentajePrimera.toFixed(1) + " %";
+
+    // Horas medias de desplazamiento por intervención
+    const mediaDesplazamiento = filas.length
+      ? desplazamiento / filas.length
+      : 0;
+
+    document.getElementById("desplazamientoMedio").textContent =
+      mediaDesplazamiento.toFixed(2);
+
+    // Porcentaje del tiempo total dedicado a desplazamientos
+    const horasTotales = trabajo + desplazamiento;
+
+    const porcentajeViaje = horasTotales > 0
+      ? (desplazamiento / horasTotales) * 100
+      : 0;
+
+    document.getElementById("porcentajeDesplazamiento").textContent =
+      porcentajeViaje.toFixed(1) + " %";
 
     const tecnicos = {};
 
