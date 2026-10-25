@@ -116,6 +116,10 @@ button{width:100%;padding:15px;background:#087443;color:white;border:0;border-ra
 
   <h3>Intervenciones por técnico</h3>
   <div id="estadisticasTecnicos"></div>
+  <h3>Clientes más visitados</h3>
+  <div id="estadisticasClientes"></div>
+  <h3>Averías más frecuentes</h3>
+  <div id="estadisticasAverias"></div>
 </section>
 <script>
 const SUPABASE_URL = "https://kcyfukwyqfgiuavulhuf.supabase.co";
@@ -330,6 +334,23 @@ Object.entries(clientes)
     const p = document.createElement("p");
     p.textContent = nombre + ": " + total + " intervenciones";
     listaClientes.appendChild(p);
+  });
+    const averias = {};
+
+filas.forEach(r => {
+  const nombre = r.tipo_averia || "Sin indicar";
+  averias[nombre] = (averias[nombre] || 0) + 1;
+});
+
+const listaAverias = document.getElementById("estadisticasAverias");
+listaAverias.replaceChildren();
+
+Object.entries(averias)
+  .sort((a, b) => b[1] - a[1])
+  .forEach(([nombre, total]) => {
+    const p = document.createElement("p");
+    p.textContent = nombre + ": " + total + " intervenciones";
+    listaAverias.appendChild(p);
   });
     estado.textContent = "Estadísticas actualizadas correctamente.";
   } catch (e) {
