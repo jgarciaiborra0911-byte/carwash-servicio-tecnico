@@ -70,6 +70,53 @@ button{width:100%;padding:15px;background:#087443;color:white;border:0;border-ra
 <div id="lista"></div>
 </div>
 </main>
+  <section id="estadisticas" class="panel" style="max-width:650px;margin:20px auto">
+  <h2>Estadísticas del servicio técnico</h2>
+
+  <button class="secondary" type="button" onclick="cargarEstadisticas()">
+    Actualizar estadísticas
+  </button>
+
+  <p id="estadoEstadisticas">Pulsa el botón para consultar los datos.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+
+    <div class="panel">
+      <h3>Intervenciones</h3>
+      <strong id="totalIntervenciones">—</strong>
+    </div>
+
+    <div class="panel">
+      <h3>Horas de trabajo</h3>
+      <strong id="totalTrabajo">—</strong>
+    </div>
+
+    <div class="panel">
+      <h3>Horas de desplazamiento</h3>
+      <strong id="totalDesplazamiento">—</strong>
+    </div>
+
+    <div class="panel">
+      <h3>Resolución en primera visita</h3>
+      <strong id="porcentajePrimera">—</strong>
+    </div>
+
+    <div class="panel">
+      <h3>Desplazamiento medio</h3>
+      <strong id="desplazamientoMedio">—</strong>
+      <span> horas por intervención</span>
+    </div>
+
+    <div class="panel">
+      <h3>Tiempo dedicado a viajar</h3>
+      <strong id="porcentajeDesplazamiento">—</strong>
+    </div>
+
+  </div>
+
+  <h3>Intervenciones por técnico</h3>
+  <div id="estadisticasTecnicos"></div>
+</section>
 <script>
 const SUPABASE_URL = "https://kcyfukwyqfgiuavulhuf.supabase.co";
 const SUPABASE_KEY = "sb_publishable_E_SgYg8Cobiv9cQoylfvMQ_aI5BiT_8";
