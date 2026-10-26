@@ -425,6 +425,22 @@ cargarEstadisticas();
     const tecnicos = {};
     
         // Gráfica de intervenciones por técnico
+    const productividadTecnicos = {};
+
+filas.forEach(r => {
+  const nombre = r.tecnico || "Sin indicar";
+  const horas = Number(r.tiempo_trabajo) || 0;
+
+  productividadTecnicos[nombre] =
+    (productividadTecnicos[nombre] || 0) + horas;
+});
+
+dibujarGrafica(
+  "graficaProductividad",
+  Object.keys(productividadTecnicos),
+  Object.values(productividadTecnicos),
+  "Horas de trabajo"
+);
     const datosTecnicos = {};
 
     filas.forEach(r => {
