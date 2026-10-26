@@ -17,6 +17,102 @@ input,select,textarea{width:100%;box-sizing:border-box;padding:13px;margin-top:6
 button{width:100%;padding:15px;background:#087443;color:white;border:0;border-radius:9px;font-size:17px;margin-top:18px}
 .secondary{background:#12345a}
 #estado{font-weight:bold;margin-top:15px}
+/* ===== DASHBOARD PROFESIONAL ===== */
+
+#estadisticas {
+max-width: 1200px !important;
+margin: 24px auto !important;
+padding: 24px !important;
+background: #f8fafc;
+border-radius: 20px;
+box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+}
+
+#estadisticas > h2 {
+font-size: 28px;
+color: #0f172a;
+margin-bottom: 24px;
+}
+
+#estadisticas > div[style*="display:grid"] {
+grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+gap: 18px !important;
+margin-top: 20px;
+}
+
+#estadisticas > div[style*="display:grid"] .panel {
+background: white;
+border: 1px solid #e2e8f0;
+border-radius: 16px;
+padding: 22px;
+box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+}
+
+#estadisticas > div[style*="display:grid"] h3 {
+font-size: 15px;
+font-weight: 600;
+color: #64748b;
+margin-top: 0;
+}
+
+#estadisticas > div[style*="display:grid"] strong {
+display: block;
+font-size: 32px;
+color: #1d4ed8;
+margin-top: 12px;
+}
+
+#estadisticas > .graficas-dashboard {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+gap: 20px;
+margin-top: 28px;
+}
+
+#estadisticas .graficas-dashboard .panel {
+background: white;
+border: 1px solid #e2e8f0;
+border-radius: 18px;
+padding: 22px;
+box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+min-width: 0;
+}
+
+#estadisticas .graficas-dashboard h3 {
+color: #0f172a;
+font-size: 18px;
+margin-top: 0;
+margin-bottom: 20px;
+}
+
+#estadoEstadisticas {
+padding: 12px 16px;
+background: #eff6ff;
+color: #1d4ed8;
+border-radius: 10px;
+font-weight: 600;
+}
+
+#estadisticas button {
+border-radius: 10px;
+padding: 12px 18px;
+font-weight: 600;
+cursor: pointer;
+}
+
+@media (max-width: 600px) {
+#estadisticas {
+padding: 14px !important;
+}
+
+#estadisticas > h2 {
+font-size: 23px;
+}
+
+#estadisticas > .graficas-dashboard {
+grid-template-columns: minmax(0, 1fr);
+}
+}  
 </style>
 </head>
 <body>
