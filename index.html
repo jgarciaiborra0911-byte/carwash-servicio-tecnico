@@ -328,7 +328,7 @@ cargarEstadisticas();
     });
 
     const lista = document.getElementById("estadisticasTecnicos");
-    lista.replaceChildren();
+    if (lista) lista.replaceChildren();
 
     Object.entries(tecnicos)
       .sort((a, b) => b[1] - a[1])
