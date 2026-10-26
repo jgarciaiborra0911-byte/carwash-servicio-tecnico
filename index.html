@@ -337,40 +337,7 @@ cargarEstadisticas();
         p.textContent = nombre + ": " + total + " intervenciones";
         lista.appendChild(p);
       });
-    const clientes = {};
-
-filas.forEach(r => {
-  const nombre = r.cliente || "Sin indicar";
-  clientes[nombre] = (clientes[nombre] || 0) + 1;
-});
-
-const listaClientes = document.getElementById("estadisticasClientes");
-if (listaClientes) listaClientes.replaceChildren();
-
-Object.entries(clientes)
-  .sort((a, b) => b[1] - a[1])
-  .forEach(([nombre, total]) => {
-    const p = document.createElement("p");
-    p.textContent = nombre + ": " + total + " intervenciones";
-    listaClientes.appendChild(p);
-  });
-    const averias = {};
-
-filas.forEach(r => {
-  const nombre = r.tipo_averia || "Sin indicar";
-  averias[nombre] = (averias[nombre] || 0) + 1;
-});
-
-const listaAverias = document.getElementById("estadisticasAverias");
-if (listaAverias) listaAverias.replaceChildren();
-
-Object.entries(averias)
-  .sort((a, b) => b[1] - a[1])
-  .forEach(([nombre, total]) => {
-    const p = document.createElement("p");
-    p.textContent = nombre + ": " + total + " intervenciones";
-    listaAverias.appendChild(p);
-  });
+    
         // Gráfica de intervenciones por técnico
     const datosTecnicos = {};
 
