@@ -321,22 +321,6 @@ cargarEstadisticas();
       porcentajeViaje.toFixed(1) + " %";
 
     const tecnicos = {};
-
-    filas.forEach(r => {
-      const nombre = r.tecnico || "Sin indicar";
-      tecnicos[nombre] = (tecnicos[nombre] || 0) + 1;
-    });
-
-    const lista = document.getElementById("estadisticasTecnicos");
-    if (lista) lista.replaceChildren();
-
-    Object.entries(tecnicos)
-      .sort((a, b) => b[1] - a[1])
-      .forEach(([nombre, total]) => {
-        const p = document.createElement("p");
-        p.textContent = nombre + ": " + total + " intervenciones";
-        lista.appendChild(p);
-      });
     
         // Gráfica de intervenciones por técnico
     const datosTecnicos = {};
