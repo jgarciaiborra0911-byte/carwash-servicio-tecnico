@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Car Wash - Servicio Técnico</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 body{font-family:Arial,sans-serif;background:#f1f5f9;margin:0;padding:16px;color:#172033}
 main{max-width:650px;margin:auto}
@@ -114,12 +115,30 @@ button{width:100%;padding:15px;background:#087443;color:white;border:0;border-ra
 
   </div>
 
-  <h3>Intervenciones por técnico</h3>
-  <div id="estadisticasTecnicos"></div>
-  <h3>Clientes más visitados</h3>
-  <div id="estadisticasClientes"></div>
-  <h3>Averías más frecuentes</h3>
-  <div id="estadisticasAverias"></div>
+  <div class="graficas-dashboard">
+
+  <div class="panel">
+    <h3>Intervenciones por técnico</h3>
+    <div style="height:300px">
+      <canvas id="graficaTecnicos"></canvas>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Clientes más visitados</h3>
+    <div style="height:300px">
+      <canvas id="graficaClientes"></canvas>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Averías más frecuentes</h3>
+    <div style="height:300px">
+      <canvas id="graficaAverias"></canvas>
+    </div>
+  </div>
+
+</div>
 </section>
 <script>
 const SUPABASE_URL = "https://kcyfukwyqfgiuavulhuf.supabase.co";
@@ -352,12 +371,100 @@ Object.entries(averias)
     p.textContent = nombre + ": " + total + " intervenciones";
     listaAverias.appendChild(p);
   });
+        // Gráfica de intervenciones por técnico
+    const datosTecnicos = {};
+
+    filas.forEach(r => {
+      const nombre = r.tecnico || "Sin indicar";
+      datosTecnicos[nombre] = (datosTecnicos[nombre] || 0) + 1;
+    });
+
+    dibujarGrafica(
+      "graficaTecnicos",
+      Object.keys(datosTecnicos),
+      Object.values(datosTecnicos),
+      "Intervenciones"
+    );
+
+    // Gráfica de clientes más visitados
+    const datosClientes = {};
+
+    filas.forEach(r => {
+      const nombre = r.cliente || "Sin indicar";
+      datosClientes[nombre] = (datosClientes[nombre] || 0) + 1;
+    });
+
+    const clientesOrdenados = Object.entries(datosClientes)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10);
+
+    dibujarGrafica(
+      "graficaClientes",
+      clientesOrdenados.map(x => x[0]),
+      clientesOrdenados.map(x => x[1]),
+      "Visitas"
+    );
+
+    // Gráfica de averías más frecuentes
+    const datosAverias = {};
+
+    filas.forEach(r => {
+      const nombre = r.tipo_averia || "Sin indicar";
+      datosAverias[nombre] = (datosAverias[nombre] || 0) + 1;
+    });
+
+    const averiasOrdenadas = Object.entries(datosAverias)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10);
+
+    dibujarGrafica(
+      "graficaAverias",
+      averiasOrdenadas.map(x => x[0]),
+      averiasOrdenadas.map(x => x[1]),
+      "Número de averías"
+    );
     estado.textContent = "Estadísticas actualizadas correctamente.";
   } catch (e) {
     estado.textContent = "Error al consultar: " + e.message;
   }
 }
+function dibujarGrafica(id, etiquetas, valores, titulo) {
+  const elemento = document.getElementById(id);
 
+  if (!elemento) return;
+
+  if (window["grafica_" + id]) {
+    window["grafica_" + id].destroy();
+  }
+
+  window["grafica_" + id] = new Chart(elemento, {
+    type: "bar",
+    data: {
+      labels: etiquetas,
+      datasets: [{
+        label: titulo,
+        data: valores,
+        backgroundColor: "#2563eb",
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: "y",
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+}
 function dictarIntervencion() {
   const estado = document.getElementById("estadoDictado");
   const Reconocimiento = window.SpeechRecognition || window.webkitSpeechRecognition;
