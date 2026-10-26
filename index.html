@@ -345,7 +345,7 @@ filas.forEach(r => {
 });
 
 const listaClientes = document.getElementById("estadisticasClientes");
-listaClientes.replaceChildren();
+if (listaClientes) listaClientes.replaceChildren();
 
 Object.entries(clientes)
   .sort((a, b) => b[1] - a[1])
@@ -362,7 +362,7 @@ filas.forEach(r => {
 });
 
 const listaAverias = document.getElementById("estadisticasAverias");
-listaAverias.replaceChildren();
+if (listaAverias) listaAverias.replaceChildren();
 
 Object.entries(averias)
   .sort((a, b) => b[1] - a[1])
