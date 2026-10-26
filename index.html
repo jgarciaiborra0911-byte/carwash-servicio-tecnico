@@ -435,6 +435,8 @@ filas.forEach(r => {
     (productividadTecnicos[nombre] || 0) + horas;
 });
 
+console.log("Productividad por técnico:", productividadTecnicos);
+
 dibujarGrafica(
   "graficaProductividad",
   Object.keys(productividadTecnicos),
