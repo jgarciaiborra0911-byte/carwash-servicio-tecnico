@@ -385,6 +385,7 @@ cargarEstadisticas();
     if (error) throw error;
 
     const filas = data || [];
+    await cargarMapaCalor(filas);
 
     document.getElementById("totalIntervenciones").textContent =
       filas.length;
@@ -780,7 +781,71 @@ if (desplazamientoValor !== "") {
   };
 
   reconocimiento.start();
-}  
+}
+let mapaCalor = null;
+let capaCalor = null;
+
+async function cargarMapaCalor(filas) {
+
+  const contenedor = document.getElementById("mapaCalor");
+  if (!contenedor) return;
+
+  if (!mapaCalor) {
+    mapaCalor = L.map("mapaCalor").setView([51.1657, 10.4515], 6);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap"
+    }).addTo(mapaCalor);
+  }
+
+  const recuento = {};
+
+  filas.forEach(r => {
+    const cp = String(r.codigo_postal || "").trim();
+
+    if (/^\d{5}$/.test(cp)) {
+      recuento[cp] = (recuento[cp] || 0) + 1;
+    }
+  });
+
+  const codigos = Object.keys(recuento);
+  const puntos = [];
+
+  for (const cp of codigos) {
+    try {
+      const url = "https://photon.komoot.io/api/?q=" +
+        encodeURIComponent(cp + ", Germany") + "&limit=1";
+
+      const respuesta = await fetch(url);
+      const resultado = await respuesta.json();
+
+      if (resultado.features && resultado.features.length) {
+        const coordenadas = resultado.features[0].geometry.coordinates;
+        puntos.push([
+          coordenadas[1],
+          coordenadas[0],
+          recuento[cp]
+        ]);
+      }
+    } catch (error) {
+      console.log("Error con código postal:", cp, error);
+    }
+  }
+
+  if (capaCalor) {
+    mapaCalor.removeLayer(capaCalor);
+  }
+
+  if (puntos.length) {
+    capaCalor = L.heatLayer(puntos, {
+      radius: 35,
+      blur: 25,
+      maxZoom: 10
+    }).addTo(mapaCalor);
+  }
+
+  setTimeout(() => mapaCalor.invalidateSize(), 300);
+}
 </script>
 </body>  
 </html>
