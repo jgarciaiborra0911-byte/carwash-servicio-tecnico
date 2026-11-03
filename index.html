@@ -786,6 +786,8 @@ let mapaCalor = null;
 let capaCalor = null;
 
 async function cargarMapaCalor(filas) {
+  console.log("Leaflet:", typeof L);
+  console.log("HeatLayer:", typeof L.heatLayer);
 
   const contenedor = document.getElementById("mapaCalor");
   if (!contenedor) return;
