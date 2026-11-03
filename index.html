@@ -267,6 +267,7 @@ document.getElementById("formulario").addEventListener("submit", async e => {
   materiales: document.getElementById("materiales").value.trim(),
   primera_visita: document.getElementById("primera").value === "true"
 };
+  console.log("Código postal que se va a guardar:", fila.codigo_postal);
   const { error } = await db.from("intervenciones").insert([fila]);
   if (error) {
     estado.textContent = "Error al guardar: " + error.message;
