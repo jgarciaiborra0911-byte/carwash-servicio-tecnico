@@ -811,6 +811,8 @@ async function cargarMapaCalor(filas) {
   });
 
   const codigos = Object.keys(recuento);
+  document.getElementById("mapaCalor").innerHTML =
+  "Códigos postales encontrados: " + codigos.join(", ");
   console.log("Códigos postales encontrados:", codigos);
   console.log("Intervenciones por código postal:", recuento);
   const puntos = [];
