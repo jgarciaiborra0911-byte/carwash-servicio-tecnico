@@ -179,7 +179,7 @@ grid-template-columns: minmax(0, 1fr);
 </main>
   <section id="estadisticas" class="panel" style="max-width:650px;margin:20px auto">
   <h2>Estadísticas del servicio técnico</h2>
-
+    
   <button class="secondary" type="button" onclick="cargarEstadisticas()">
     Actualizar estadísticas
   </button>
@@ -249,6 +249,10 @@ grid-template-columns: minmax(0, 1fr);
   <h3>Productividad por técnico: horas de trabajo</h3>
   <div style="height:320px">
     <canvas id="graficaProductividad"></canvas>
+    <div class="grafica-card">
+      <h3>Intervenciones por tipo de servicio</h3>
+      <canvas id="graficaServicios"></canvas>
+    </div>
   </div>
 </div>
 <div class="panel" style="margin-top:25px">
@@ -461,6 +465,24 @@ dibujarGrafica(
   Object.keys(productividadTecnicos),
   Object.values(productividadTecnicos),
   "Horas de trabajo"
+);
+    // Gráfica de intervenciones por tipo de servicio
+const datosServicios = {
+  "Reparación": 0,
+  "Mantenimiento": 0,
+  "Nueva instalación": 0
+};
+
+filas.forEach(r => {
+  const tipo = r.tipo_servicio || "Sin indicar";
+  datosServicios[tipo] = (datosServicios[tipo] || 0) + 1;
+});
+
+dibujarGrafica(
+  "graficaServicios",
+  Object.keys(datosServicios),
+  Object.values(datosServicios),
+  "Intervenciones por tipo de servicio"
 );
     const datosTecnicos = {};
 
